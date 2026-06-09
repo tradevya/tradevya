@@ -1,11 +1,13 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useId, useMemo, useState } from "react";
 import Link from "next/link";
+import { Loader2, MapPin } from "lucide-react";
 import { loginAction, resendVerificationAction, signUpAction, type ActionState } from "@/app/actions/auth";
 import { completeLocationAction, requestLocationChangeAction } from "@/app/actions/profile";
 import { FormMessage } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
+import { findNearestAirport } from "@/lib/airport-location";
 import type { Airport, Company, Station } from "@/lib/demo-data";
 
 const initialState: ActionState = { ok: false, message: "" };
@@ -23,11 +25,73 @@ function DirectoryFields({
 }) {
   const [companyId, setCompanyId] = useState(companies[0]?.id ?? "");
   const [airportId, setAirportId] = useState(airports[0]?.id ?? "");
+  const [stationId, setStationId] = useState("");
+  const [locationMessage, setLocationMessage] = useState("");
+  const [isLocating, setIsLocating] = useState(false);
+  const airportSelectId = useId();
   const selectedCompany = companies.find((company) => company.id === companyId);
   const filteredStations = useMemo(
     () => stations.filter((station) => station.airport_id === airportId),
     [airportId, stations],
   );
+
+  useEffect(() => {
+    setStationId((currentStationId) => {
+      if (filteredStations.some((station) => station.id === currentStationId)) {
+        return currentStationId;
+      }
+
+      return filteredStations[0]?.id ?? "";
+    });
+  }, [filteredStations]);
+
+  function handleUseClosestAirport() {
+    if (!navigator.geolocation) {
+      setLocationMessage("Location is not available in this browser. Choose your airport manually.");
+      return;
+    }
+
+    setIsLocating(true);
+    setLocationMessage("Reading your location...");
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const nearest = findNearestAirport(airports, {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+
+        setIsLocating(false);
+
+        if (!nearest) {
+          setLocationMessage("No matching airport coordinates are available yet. Choose your airport manually.");
+          return;
+        }
+
+        setAirportId(nearest.airport.id);
+        const roundedDistance = Math.max(1, Math.round(nearest.distanceMiles));
+        setLocationMessage(
+          `Selected ${nearest.airport.iata_code}, about ${roundedDistance} ${roundedDistance === 1 ? "mile" : "miles"} away.`,
+        );
+      },
+      (error) => {
+        setIsLocating(false);
+
+        if (error.code === error.PERMISSION_DENIED) {
+          setLocationMessage("Location permission was blocked. Choose your airport manually.");
+          return;
+        }
+
+        if (error.code === error.TIMEOUT) {
+          setLocationMessage("Location timed out. Try again or choose your airport manually.");
+          return;
+        }
+
+        setLocationMessage("Could not read your location. Choose your airport manually.");
+      },
+      { enableHighAccuracy: true, maximumAge: 300000, timeout: 10000 },
+    );
+  }
 
   return (
     <>
@@ -60,12 +124,27 @@ function DirectoryFields({
         </label>
       ) : null}
 
-      <label className="grid gap-2 text-sm font-semibold text-zinc-800">
-        Airport
+      <div className="grid gap-2 text-sm font-semibold text-zinc-800">
+        <span className="flex flex-wrap items-center justify-between gap-2">
+          <label htmlFor={airportSelectId}>Airport</label>
+          <button
+            className="inline-flex min-h-9 items-center gap-2 rounded-md border border-teal-200 bg-teal-50 px-3 text-xs font-bold text-teal-800 hover:border-teal-300 hover:bg-teal-100 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isLocating || airports.length === 0}
+            onClick={handleUseClosestAirport}
+            type="button"
+          >
+            {isLocating ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <MapPin aria-hidden className="size-4" />}
+            Use my location
+          </button>
+        </span>
         <select
           className="min-h-11 rounded-md border border-zinc-300 bg-white px-3 text-sm outline-none focus:border-teal-600"
+          id={airportSelectId}
           name="airport_id"
-          onChange={(event) => setAirportId(event.target.value)}
+          onChange={(event) => {
+            setAirportId(event.target.value);
+            setLocationMessage("");
+          }}
           required
           value={airportId}
         >
@@ -75,14 +154,22 @@ function DirectoryFields({
             </option>
           ))}
         </select>
-      </label>
+        {locationMessage ? (
+          <span aria-live="polite" className="text-xs font-medium text-zinc-600">
+            {locationMessage}
+          </span>
+        ) : null}
+      </div>
 
       <label className="grid gap-2 text-sm font-semibold text-zinc-800">
         Station / department
         <select
           className="min-h-11 rounded-md border border-zinc-300 bg-white px-3 text-sm outline-none focus:border-teal-600"
+          disabled={filteredStations.length === 0}
           name="station_id"
+          onChange={(event) => setStationId(event.target.value)}
           required
+          value={stationId}
         >
           {filteredStations.map((station) => (
             <option key={station.id} value={station.id}>
