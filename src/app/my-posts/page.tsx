@@ -34,7 +34,7 @@ export default async function MyPostsPage() {
       />
       <section className="grid gap-3">
         {posts.length ? (
-          posts.map((post) => <ShiftPostCard key={post.id} post={post} />)
+          posts.map((post, index) => <ShiftPostCard emphasis={index % 2 === 0} key={post.id} post={post} />)
         ) : (
           <EmptyState title="You have not posted yet" body="Create a shift post when you need coverage, a trade, or extra hours." actionHref="/posts/new" actionLabel="Post a shift" />
         )}

@@ -51,7 +51,7 @@ export async function createShiftPostAction(_state: ActionState, formData: FormD
     return { ok: false, message: error.message };
   }
 
-  redirect("/posts");
+  redirect("/dashboard");
 }
 
 const submitRequestSchema = z.object({

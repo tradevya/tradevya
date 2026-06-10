@@ -37,7 +37,7 @@ export default async function NotificationsPage() {
       <section className="grid gap-3">
         {notifications?.length ? (
           notifications.map((notification) => (
-            <article className={`rounded-lg border p-4 shadow-sm ${notification.read_at ? "border-zinc-200 bg-white" : "border-teal-300 bg-teal-50"}`} key={notification.id}>
+            <article className={`rounded-lg border p-4 shadow-sm ${notification.read_at ? "border-zinc-200 bg-white" : "border-red-300 bg-red-50"}`} key={notification.id}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h2 className="font-bold text-zinc-950">{notification.title}</h2>
@@ -53,7 +53,7 @@ export default async function NotificationsPage() {
                   {!notification.read_at ? (
                     <form action={markNotificationReadAction}>
                       <input name="notification_id" type="hidden" value={notification.id} />
-                      <button className="rounded-md bg-teal-700 px-3 py-2 text-sm font-bold text-white hover:bg-teal-800" type="submit">
+                      <button className="rounded-md bg-red-600 px-3 py-2 text-sm font-bold text-white hover:bg-red-700" type="submit">
                         Read
                       </button>
                     </form>

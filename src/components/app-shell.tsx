@@ -11,6 +11,13 @@ const navItems = [
   { href: "/profile", label: "Profile", icon: UserRound },
 ];
 
+const mobileNavItems = [
+  { href: "/dashboard", label: "Home", icon: Home },
+  { href: "/my-posts", label: "My Posts", icon: ClipboardList },
+  { href: "/notifications", label: "Alerts", icon: Bell },
+  { href: "/profile", label: "Profile", icon: UserRound },
+];
+
 export function AppShell({
   children,
   profile,
@@ -38,8 +45,8 @@ export function AppShell({
               <span className="block truncate text-xs text-zinc-500">{airportCode} / {stationName}</span>
             </span>
           </Link>
-          <div className="hidden items-center gap-2 md:flex">
-            <span className="rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-medium text-zinc-700">{companyName}</span>
+          <div className="flex items-center gap-2">
+            <span className="hidden rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-medium text-zinc-700 md:inline-flex">{companyName}</span>
             <form action={logoutAction}>
               <button className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-zinc-200 text-zinc-600 hover:bg-zinc-100" title="Log out" type="submit">
                 <LogOut aria-hidden="true" size={18} />
@@ -65,7 +72,7 @@ export function AppShell({
                     {item.label}
                   </span>
                   {item.href === "/notifications" && unreadCount > 0 ? (
-                    <span className="rounded-md bg-amber-100 px-2 py-0.5 text-xs text-amber-900">{unreadCount}</span>
+                    <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs text-red-800">{unreadCount}</span>
                   ) : null}
                 </Link>
               );
@@ -86,15 +93,30 @@ export function AppShell({
         <main className="min-w-0 pb-24 md:pb-0">{children}</main>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-zinc-200 bg-white md:hidden">
-        {navItems.map((item) => {
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 items-end border-t border-zinc-200 bg-white px-1 pb-1 pt-2 md:hidden">
+        {mobileNavItems.slice(0, 2).map((item) => {
           const Icon = item.icon;
           return (
-            <Link className="relative flex flex-col items-center gap-1 px-1 py-2 text-[11px] font-semibold text-zinc-600" href={item.href} key={item.href}>
+            <Link className="relative flex min-h-14 flex-col items-center justify-center gap-1 px-1 text-[10px] font-bold text-zinc-600" href={item.href} key={item.href}>
+              <Icon aria-hidden="true" size={20} />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+        <Link className="relative -mt-7 flex min-h-16 flex-col items-center justify-start gap-1 text-[10px] font-bold text-teal-800" href="/posts/new">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-teal-700 text-white shadow-lg shadow-teal-900/20 ring-4 ring-white">
+            <Plus aria-hidden="true" size={28} />
+          </span>
+          <span>Post</span>
+        </Link>
+        {mobileNavItems.slice(2).map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link className="relative flex min-h-14 flex-col items-center justify-center gap-1 px-1 text-[10px] font-bold text-zinc-600" href={item.href} key={item.href}>
               <Icon aria-hidden="true" size={20} />
               <span>{item.label}</span>
               {item.href === "/notifications" && unreadCount > 0 ? (
-                <span className="absolute right-5 top-1 rounded-md bg-amber-500 px-1.5 text-[10px] text-white">{unreadCount}</span>
+                <span className="absolute right-4 top-1 rounded-full bg-red-600 px-1.5 text-[10px] text-white">{unreadCount}</span>
               ) : null}
             </Link>
           );

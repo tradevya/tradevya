@@ -18,7 +18,7 @@ export const SHIFT_CATEGORIES = [
   { value: "pick_up", label: "Pick Up", description: "Someone wants another person to take their shift." },
   { value: "give_away", label: "Give Away", description: "Someone is giving away a shift." },
   { value: "day_trade", label: "Day Trade", description: "Someone wants to swap shifts." },
-  { value: "looking_for_double", label: "Looking for Double", description: "Someone wants to work 2 shifts in one day." },
+  { value: "looking_for_double", label: "Find Double", description: "Someone wants to work 2 shifts in one day." },
 ] as const;
 
 export const DAYS_OF_WEEK = [

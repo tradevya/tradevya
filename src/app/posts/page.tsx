@@ -135,7 +135,7 @@ export default async function PostsPage({
 
       <section className="grid gap-3">
         {posts.length ? (
-          posts.map((post) => <ShiftPostCard key={post.id} post={post} />)
+          posts.map((post, index) => <ShiftPostCard emphasis={index % 2 === 0} key={post.id} post={post} />)
         ) : (
           <EmptyState title="No matching posts" body="Try clearing a filter or create a new station post." actionHref="/posts/new" actionLabel="Create a post" />
         )}

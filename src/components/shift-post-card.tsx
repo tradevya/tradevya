@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { CalendarDays, Clock, MapPin } from "lucide-react";
-import { CategoryBadge, StatusBadge } from "@/components/status-badge";
-import { formatDate, formatTime } from "@/lib/format";
+import { ChevronRight } from "lucide-react";
+import { StatusBadge } from "@/components/status-badge";
+import { categoryLabel, formatShortDate, formatTime } from "@/lib/format";
 
 export type ShiftPostSummary = {
   id: string;
@@ -17,32 +17,35 @@ export type ShiftPostSummary = {
   created_at: string;
 };
 
-export function ShiftPostCard({ post }: { post: ShiftPostSummary }) {
+export function ShiftPostCard({ post, emphasis = false }: { post: ShiftPostSummary; emphasis?: boolean }) {
+  const category = categoryLabel(post.category);
+
   return (
-    <Link className="block rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-teal-300 hover:shadow-md" href={`/posts/${post.id}`}>
-      <div className="flex flex-wrap items-center gap-2">
-        <CategoryBadge value={post.category} />
-        <StatusBadge value={post.status} />
-      </div>
-      <div className="mt-4 grid gap-3">
-        <h2 className="text-lg font-bold text-zinc-950">{post.day_of_week} shift</h2>
-        <div className="grid gap-2 text-sm text-zinc-600 sm:grid-cols-3">
-          <span className="flex items-center gap-2">
-            <CalendarDays aria-hidden="true" size={16} />
-            {formatDate(post.shift_date)}
-          </span>
-          <span className="flex items-center gap-2">
-            <Clock aria-hidden="true" size={16} />
-            {formatTime(post.shift_start)} - {formatTime(post.shift_end)}
-          </span>
-          <span className="flex items-center gap-2">
-            <MapPin aria-hidden="true" size={16} />
-            {post.location_team || "Station area"}
-          </span>
+    <Link
+      className={`block rounded-md border p-3 shadow-sm transition hover:border-sky-400 hover:shadow-md sm:p-4 ${
+        emphasis ? "border-sky-200 bg-sky-50" : "border-zinc-200 bg-white"
+      }`}
+      href={`/posts/${post.id}`}
+    >
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+        <div className="min-w-0">
+          <div className="flex min-w-0 items-center gap-2">
+            <p className="truncate text-sm font-extrabold uppercase tracking-normal text-zinc-950 sm:text-base">{category}</p>
+            <StatusBadge value={post.status} />
+          </div>
+          <p className="mt-2 truncate text-sm font-semibold text-zinc-700">
+            {formatShortDate(post.shift_date)} {post.day_of_week} {formatTime(post.shift_start)} to {formatTime(post.shift_end)}
+          </p>
+          <p className="mt-2 flex items-center gap-1 text-xs font-bold text-sky-700">
+            Tap for details
+            <ChevronRight aria-hidden="true" size={14} />
+          </p>
         </div>
-        {post.notes ? <p className="line-clamp-2 text-sm leading-6 text-zinc-700">{post.notes}</p> : null}
-        <p className="text-xs font-medium text-zinc-500">Posted by {post.poster_name_snapshot || "Tradevya member"}</p>
+        <div className="text-right">
+          {post.location_team ? <p className="max-w-24 truncate text-xs font-semibold text-zinc-500 sm:max-w-36">{post.location_team}</p> : null}
+        </div>
       </div>
+      <p className="sr-only">Posted by {post.poster_name_snapshot || "Tradevya member"}{post.notes ? `. Notes: ${post.notes}` : ""}</p>
     </Link>
   );
 }

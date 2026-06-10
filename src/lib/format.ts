@@ -24,6 +24,17 @@ export function formatDate(value: string | null | undefined) {
   }).format(new Date(`${value}T00:00:00Z`));
 }
 
+export function formatShortDate(value: string | null | undefined) {
+  if (!value) return "Not set";
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "numeric",
+    day: "numeric",
+    year: "2-digit",
+    timeZone: "UTC",
+  }).format(new Date(`${value}T00:00:00Z`));
+}
+
 export function formatDateTime(value: string | null | undefined) {
   if (!value) return "Not set";
 
