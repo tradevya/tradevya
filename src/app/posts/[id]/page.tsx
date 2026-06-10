@@ -93,9 +93,9 @@ export default async function ShiftPostDetailPage({
 
   return (
     <AppShell profile={profile} unreadCount={unreadResult.count ?? 0}>
-      <Link className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-teal-700" href="/posts">
+      <Link className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-teal-700" href="/dashboard">
         <ArrowLeft aria-hidden="true" size={16} />
-        Back to All Posts
+        Back to Dashboard
       </Link>
 
       {!post ? (

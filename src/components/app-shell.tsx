@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Bell, ClipboardList, Home, LogOut, Plane, Plus, ShieldCheck, UserRound, UsersRound } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
+import { isBackendOwnerEmail } from "@/lib/admin";
 import type { Profile } from "@/lib/data";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/posts", label: "All Posts", icon: ClipboardList },
+  { href: "/my-posts", label: "My Posts", icon: ClipboardList },
   { href: "/posts/new", label: "Post", icon: Plus },
   { href: "/notifications", label: "Alerts", icon: Bell },
   { href: "/profile", label: "Profile", icon: UserRound },
@@ -30,7 +31,7 @@ export function AppShell({
   const companyName = profile?.custom_company_name || profile?.companies?.name || "Company pending";
   const stationName = profile?.stations?.name || "Station pending";
   const airportCode = profile?.airports?.iata_code || "Airport pending";
-  const isAdmin = profile?.role === "station_admin" || profile?.role === "airport_admin";
+  const isBackendOwner = isBackendOwnerEmail(profile?.email);
 
   return (
     <div className="min-h-screen bg-[#f6f8f7] text-zinc-950">
@@ -47,6 +48,11 @@ export function AppShell({
           </Link>
           <div className="flex items-center gap-2">
             <span className="hidden rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-medium text-zinc-700 md:inline-flex">{companyName}</span>
+            {isBackendOwner ? (
+              <Link className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-zinc-200 text-zinc-600 hover:bg-zinc-100" href="/admin/moderation" title="Backend">
+                <ShieldCheck aria-hidden="true" size={18} />
+              </Link>
+            ) : null}
             <form action={logoutAction}>
               <button className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-zinc-200 text-zinc-600 hover:bg-zinc-100" title="Log out" type="submit">
                 <LogOut aria-hidden="true" size={18} />
@@ -81,10 +87,10 @@ export function AppShell({
               <UsersRound aria-hidden="true" size={18} />
               Airport Board
             </Link>
-            {isAdmin ? (
+            {isBackendOwner ? (
               <Link className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-zinc-700 hover:bg-white hover:text-zinc-950" href="/admin/moderation">
                 <ShieldCheck aria-hidden="true" size={18} />
-                Admin
+                Backend
               </Link>
             ) : null}
           </nav>

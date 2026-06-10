@@ -63,7 +63,7 @@ export default async function MyRequestsPage() {
             );
           })
         ) : (
-          <EmptyState title="No requests yet" body="When you ask to take or trade a shift, it will show here." actionHref="/posts" actionLabel="Browse posts" />
+          <EmptyState title="No requests yet" body="When you ask to take or trade a shift, it will show here." actionHref="/dashboard" actionLabel="Browse posts" />
         )}
       </section>
     </AppShell>
