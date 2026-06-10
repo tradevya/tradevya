@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, CalendarDays, Clock, MapPin } from "lucide-react";
 import { respondToShiftRequestAction } from "@/app/actions/marketplace";
 import { AppShell } from "@/components/app-shell";
+import { PostDetailBackGuard } from "@/components/post-detail-back-guard";
 import { CategoryBadge, StatusBadge } from "@/components/status-badge";
 import { ShiftRequestForm } from "@/components/shift-request-form";
 import { formatDate, formatDateTime, formatTime, statusLabel } from "@/lib/format";
@@ -93,6 +94,7 @@ export default async function ShiftPostDetailPage({
 
   return (
     <AppShell profile={profile} unreadCount={unreadResult.count ?? 0}>
+      <PostDetailBackGuard />
       <Link className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-teal-700" href="/dashboard">
         <ArrowLeft aria-hidden="true" size={16} />
         Back to Dashboard

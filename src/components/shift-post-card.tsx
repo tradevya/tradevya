@@ -42,7 +42,7 @@ export function ShiftPostCard({ post, emphasis = false }: { post: ShiftPostSumma
           </p>
         </div>
         <div className="text-right">
-          {post.location_team ? <p className="max-w-24 truncate text-xs font-semibold text-zinc-500 sm:max-w-36">{post.location_team}</p> : null}
+          {post.location_team ? <p className="max-w-28 truncate text-xs font-semibold text-zinc-500 sm:max-w-44">Location: {post.location_team}</p> : null}
         </div>
       </div>
       <p className="sr-only">Posted by {post.poster_name_snapshot || "Tradevya member"}{post.notes ? `. Notes: ${post.notes}` : ""}</p>

@@ -118,13 +118,18 @@ export async function loginAction(_state: ActionState, formData: FormData): Prom
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("email_verified_at")
+    .select("email_verified_at,blocked_at")
     .eq("id", user.id)
     .single();
 
   if (!profile?.email_verified_at) {
     await supabase.auth.signOut();
     redirect(`/verify-email?email=${encodeURIComponent(email)}`);
+  }
+
+  if (profile.blocked_at) {
+    await supabase.auth.signOut();
+    return { ok: false, message: "This account is blocked. Contact the Tradevya backend owner for access." };
   }
 
   redirect("/dashboard");
