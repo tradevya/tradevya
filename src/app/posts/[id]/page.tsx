@@ -40,8 +40,6 @@ type ShiftPostDetail = {
   poster_name_snapshot: string | null;
   status: string;
   created_at: string;
-  profiles: RelatedProfile | null;
-  shift_requests: RelatedRequest[];
 };
 
 export default async function ShiftPostDetailPage({
@@ -54,7 +52,7 @@ export default async function ShiftPostDetailPage({
   const [postResult, unreadResult] = await Promise.all([
     supabase
       .from("shift_posts")
-      .select("*, profiles(full_name,email), shift_requests(id,requester_id,request_type,proposed_shift_date,proposed_start_time,proposed_end_time,message,status,created_at, profiles(full_name,email))")
+      .select("id,user_id,category,shift_date,day_of_week,shift_start,shift_end,location_team,notes,poster_name_snapshot,status,created_at")
       .eq("id", id)
       .single(),
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("read_at", null),
@@ -62,7 +60,36 @@ export default async function ShiftPostDetailPage({
 
   const post = postResult.data as ShiftPostDetail | null;
   const isOwner = post?.user_id === user.id;
-  const requests = [...(post?.shift_requests ?? [])].sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const [posterProfileResult, requestsResult] = post
+    ? await Promise.all([
+        post.user_id
+          ? supabase.from("profiles").select("full_name,email").eq("id", post.user_id).maybeSingle()
+          : Promise.resolve({ data: null }),
+        isOwner
+          ? supabase
+              .from("shift_requests")
+              .select("id,requester_id,request_type,proposed_shift_date,proposed_start_time,proposed_end_time,message,status,created_at")
+              .eq("shift_post_id", post.id)
+              .order("created_at", { ascending: false })
+          : Promise.resolve({ data: [] }),
+      ])
+    : [{ data: null }, { data: [] }];
+  const requestRows = (requestsResult.data ?? []) as Omit<RelatedRequest, "profiles">[];
+  const requesterIds = [...new Set(requestRows.map((request) => request.requester_id))];
+  const requesterProfilesResult = requesterIds.length
+    ? await supabase.from("profiles").select("id,full_name,email").in("id", requesterIds)
+    : { data: [] };
+  const requesterProfiles = new Map(
+    (requesterProfilesResult.data ?? []).map((requester) => [
+      requester.id,
+      { full_name: requester.full_name, email: requester.email } satisfies RelatedProfile,
+    ]),
+  );
+  const requests = requestRows.map((request) => ({
+    ...request,
+    profiles: requesterProfiles.get(request.requester_id) ?? null,
+  }));
+  const posterProfile = posterProfileResult.data as RelatedProfile | null;
 
   return (
     <AppShell profile={profile} unreadCount={unreadResult.count ?? 0}>
@@ -84,7 +111,7 @@ export default async function ShiftPostDetailPage({
               <StatusBadge value={post.status} />
             </div>
             <h1 className="mt-4 text-3xl font-bold text-zinc-950">{post.day_of_week} shift</h1>
-            <p className="mt-2 text-sm text-zinc-500">Posted by {post.poster_name_snapshot || post.profiles?.full_name || "Tradevya member"} on {formatDateTime(post.created_at)}</p>
+            <p className="mt-2 text-sm text-zinc-500">Posted by {post.poster_name_snapshot || posterProfile?.full_name || "Tradevya member"} on {formatDateTime(post.created_at)}</p>
             <div className="mt-5 grid gap-3 text-sm text-zinc-700 md:grid-cols-3">
               <span className="flex items-center gap-2">
                 <CalendarDays aria-hidden="true" size={18} />

@@ -70,6 +70,8 @@ export async function signUpAction(_state: ActionState, formData: FormData): Pro
     return { ok: false, message: error.message };
   }
 
+  await supabase.auth.signOut();
+
   redirect(`/verify-email?email=${encodeURIComponent(email)}`);
 }
 
@@ -110,6 +112,18 @@ export async function loginAction(_state: ActionState, formData: FormData): Prom
   } = await supabase.auth.getUser();
 
   if (!user?.email_confirmed_at) {
+    await supabase.auth.signOut();
+    redirect(`/verify-email?email=${encodeURIComponent(email)}`);
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("email_verified_at")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.email_verified_at) {
+    await supabase.auth.signOut();
     redirect(`/verify-email?email=${encodeURIComponent(email)}`);
   }
 

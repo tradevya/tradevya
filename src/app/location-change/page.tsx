@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/app-shell";
+import { AirportRequestForm } from "@/components/airport-request-form";
 import { LocationChangeForm } from "@/components/auth-forms";
 import { PageHeader } from "@/components/page-header";
 import { getAuthenticatedContext, getDirectoryData } from "@/lib/data";
@@ -27,6 +28,9 @@ export default async function LocationChangePage() {
       <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
         <section className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
           <LocationChangeForm airports={directory.airports} companies={directory.companies} stations={directory.stations} />
+          <div className="mt-5">
+            <AirportRequestForm />
+          </div>
         </section>
         <aside className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
           <h2 className="font-bold text-zinc-950">Recent requests</h2>

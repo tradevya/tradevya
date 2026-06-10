@@ -57,7 +57,7 @@ npm run dev
 
 - Do not commit passwords or Supabase service-role keys.
 - User passwords are never stored in source, `.env`, seed files, or README files.
-- Personal email domains are blocked both in the app and by a Supabase Auth trigger.
+- Personal email domains are blocked both in the app and by a Supabase Auth trigger, with the owner admin email allowlisted.
 - Supabase Row Level Security scopes shift posts to a user's station.
 
 ## Phase 2 Scaffolded

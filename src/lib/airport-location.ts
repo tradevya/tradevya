@@ -54,7 +54,10 @@ function distanceInMiles(from: Coordinates, to: Coordinates) {
 
 export function findNearestAirport(airports: Airport[], currentLocation: Coordinates): NearestAirport | null {
   return airports.reduce<NearestAirport | null>((nearest, airport) => {
-    const airportLocation = AIRPORT_COORDINATES[airport.iata_code.toUpperCase()];
+    const airportLocation =
+      typeof airport.latitude === "number" && typeof airport.longitude === "number"
+        ? { latitude: airport.latitude, longitude: airport.longitude }
+        : AIRPORT_COORDINATES[airport.iata_code.toUpperCase()];
 
     if (!airportLocation) return nearest;
 

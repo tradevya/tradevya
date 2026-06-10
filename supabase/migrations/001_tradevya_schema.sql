@@ -32,19 +32,20 @@ returns boolean
 language sql
 immutable
 as $$
-  select lower(split_part(coalesce(email, ''), '@', 2)) = any(array[
-    'gmail.com',
-    'yahoo.com',
-    'outlook.com',
-    'hotmail.com',
-    'icloud.com',
-    'aol.com',
-    'proton.me',
-    'protonmail.com',
-    'live.com',
-    'msn.com',
-    'me.com'
-  ]::text[]);
+  select lower(coalesce(email, '')) <> 'tradevya@gmail.com'
+    and lower(split_part(coalesce(email, ''), '@', 2)) = any(array[
+      'gmail.com',
+      'yahoo.com',
+      'outlook.com',
+      'hotmail.com',
+      'icloud.com',
+      'aol.com',
+      'proton.me',
+      'protonmail.com',
+      'live.com',
+      'msn.com',
+      'me.com'
+    ]::text[]);
 $$;
 
 create or replace function public.is_work_email(email text)

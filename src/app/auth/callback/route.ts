@@ -8,7 +8,21 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createSupabaseServerClient();
-    await supabase.auth.exchangeCodeForSession(code);
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user?.id && user.email_confirmed_at) {
+        await supabase
+          .from("profiles")
+          .update({ email_verified_at: new Date().toISOString() })
+          .eq("id", user.id)
+          .is("email_verified_at", null);
+      }
+    }
   }
 
   return NextResponse.redirect(new URL(next, requestUrl.origin));

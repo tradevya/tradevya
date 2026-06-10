@@ -12,6 +12,8 @@ export const PERSONAL_EMAIL_DOMAINS = [
   "me.com",
 ] as const;
 
+export const OWNER_EMAIL_ALLOWLIST = ["tradevya@gmail.com"] as const;
+
 export const SHIFT_CATEGORIES = [
   { value: "pick_up", label: "Pick Up", description: "Someone wants another person to take their shift." },
   { value: "give_away", label: "Give Away", description: "Someone is giving away a shift." },

@@ -62,28 +62,30 @@ insert into public.companies (name, company_type, is_other) values
   ('Other', 'other', true)
 on conflict (name) do nothing;
 
-insert into public.airports (iata_code, name, city, state) values
-  ('ATL', 'Hartsfield-Jackson Atlanta International Airport', 'Atlanta', 'GA'),
-  ('LAX', 'Los Angeles International Airport', 'Los Angeles', 'CA'),
-  ('ORD', 'O''Hare International Airport', 'Chicago', 'IL'),
-  ('DFW', 'Dallas Fort Worth International Airport', 'Dallas-Fort Worth', 'TX'),
-  ('DEN', 'Denver International Airport', 'Denver', 'CO'),
-  ('JFK', 'John F. Kennedy International Airport', 'New York', 'NY'),
-  ('SFO', 'San Francisco International Airport', 'San Francisco', 'CA'),
-  ('SEA', 'Seattle-Tacoma International Airport', 'Seattle', 'WA'),
-  ('MIA', 'Miami International Airport', 'Miami', 'FL'),
-  ('CLT', 'Charlotte Douglas International Airport', 'Charlotte', 'NC'),
-  ('LAS', 'Harry Reid International Airport', 'Las Vegas', 'NV'),
-  ('MCO', 'Orlando International Airport', 'Orlando', 'FL'),
-  ('EWR', 'Newark Liberty International Airport', 'Newark', 'NJ'),
-  ('PHX', 'Phoenix Sky Harbor International Airport', 'Phoenix', 'AZ'),
-  ('IAH', 'George Bush Intercontinental Airport', 'Houston', 'TX'),
-  ('BOS', 'Boston Logan International Airport', 'Boston', 'MA'),
-  ('MSP', 'Minneapolis-Saint Paul International Airport', 'Minneapolis-Saint Paul', 'MN'),
-  ('DTW', 'Detroit Metropolitan Wayne County Airport', 'Detroit', 'MI'),
-  ('PHL', 'Philadelphia International Airport', 'Philadelphia', 'PA'),
-  ('DCA', 'Ronald Reagan Washington National Airport', 'Washington', 'DC')
-on conflict (iata_code) do nothing;
+insert into public.airports (iata_code, name, city, state, latitude, longitude) values
+  ('ATL', 'Hartsfield-Jackson Atlanta International Airport', 'Atlanta', 'GA', 33.640700, -84.427700),
+  ('LAX', 'Los Angeles International Airport', 'Los Angeles', 'CA', 33.941600, -118.408500),
+  ('ORD', 'O''Hare International Airport', 'Chicago', 'IL', 41.974200, -87.907300),
+  ('DFW', 'Dallas Fort Worth International Airport', 'Dallas-Fort Worth', 'TX', 32.899800, -97.040300),
+  ('DEN', 'Denver International Airport', 'Denver', 'CO', 39.856100, -104.673700),
+  ('JFK', 'John F. Kennedy International Airport', 'New York', 'NY', 40.641300, -73.778100),
+  ('SFO', 'San Francisco International Airport', 'San Francisco', 'CA', 37.621300, -122.379000),
+  ('SEA', 'Seattle-Tacoma International Airport', 'Seattle', 'WA', 47.450200, -122.308800),
+  ('MIA', 'Miami International Airport', 'Miami', 'FL', 25.795900, -80.287000),
+  ('CLT', 'Charlotte Douglas International Airport', 'Charlotte', 'NC', 35.214400, -80.947300),
+  ('LAS', 'Harry Reid International Airport', 'Las Vegas', 'NV', 36.084000, -115.153700),
+  ('MCO', 'Orlando International Airport', 'Orlando', 'FL', 28.431200, -81.308100),
+  ('EWR', 'Newark Liberty International Airport', 'Newark', 'NJ', 40.689500, -74.174500),
+  ('PHX', 'Phoenix Sky Harbor International Airport', 'Phoenix', 'AZ', 33.435200, -112.010100),
+  ('IAH', 'George Bush Intercontinental Airport', 'Houston', 'TX', 29.990200, -95.336800),
+  ('BOS', 'Boston Logan International Airport', 'Boston', 'MA', 42.365600, -71.009600),
+  ('MSP', 'Minneapolis-Saint Paul International Airport', 'Minneapolis-Saint Paul', 'MN', 44.884800, -93.222300),
+  ('DTW', 'Detroit Metropolitan Wayne County Airport', 'Detroit', 'MI', 42.216200, -83.355400),
+  ('PHL', 'Philadelphia International Airport', 'Philadelphia', 'PA', 39.874400, -75.242400),
+  ('DCA', 'Ronald Reagan Washington National Airport', 'Washington', 'DC', 38.851200, -77.040200)
+on conflict (iata_code) do update
+set latitude = excluded.latitude,
+    longitude = excluded.longitude;
 
 insert into public.stations (airport_id, name, description)
 select a.id, s.name, s.description

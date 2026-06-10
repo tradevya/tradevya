@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, ClipboardList, Home, LogOut, Plane, Plus, UserRound, UsersRound } from "lucide-react";
+import { Bell, ClipboardList, Home, LogOut, Plane, Plus, ShieldCheck, UserRound, UsersRound } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import type { Profile } from "@/lib/data";
 
@@ -23,18 +23,19 @@ export function AppShell({
   const companyName = profile?.custom_company_name || profile?.companies?.name || "Company pending";
   const stationName = profile?.stations?.name || "Station pending";
   const airportCode = profile?.airports?.iata_code || "Airport pending";
+  const isAdmin = profile?.role === "station_admin" || profile?.role === "airport_admin";
 
   return (
     <div className="min-h-screen bg-[#f6f8f7] text-zinc-950">
       <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <Link className="flex items-center gap-2" href="/dashboard">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 py-3 sm:px-4">
+          <Link className="flex min-w-0 items-center gap-2" href="/dashboard">
             <span className="flex h-9 w-9 items-center justify-center rounded-md bg-teal-700 text-white">
               <Plane aria-hidden="true" size={20} />
             </span>
-            <span>
+            <span className="min-w-0">
               <span className="block text-base font-bold">Tradevya</span>
-              <span className="block text-xs text-zinc-500">{airportCode} / {stationName}</span>
+              <span className="block truncate text-xs text-zinc-500">{airportCode} / {stationName}</span>
             </span>
           </Link>
           <div className="hidden items-center gap-2 md:flex">
@@ -48,7 +49,7 @@ export function AppShell({
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-5 md:grid-cols-[220px_1fr] md:py-8">
+      <div className="mx-auto grid max-w-6xl gap-5 px-3 py-4 sm:px-4 md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 md:py-8">
         <aside className="hidden md:block">
           <nav className="sticky top-24 grid gap-2">
             {navItems.map((item) => {
@@ -73,10 +74,16 @@ export function AppShell({
               <UsersRound aria-hidden="true" size={18} />
               Airport Board
             </Link>
+            {isAdmin ? (
+              <Link className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-zinc-700 hover:bg-white hover:text-zinc-950" href="/admin/moderation">
+                <ShieldCheck aria-hidden="true" size={18} />
+                Admin
+              </Link>
+            ) : null}
           </nav>
         </aside>
 
-        <main className="pb-24 md:pb-0">{children}</main>
+        <main className="min-w-0 pb-24 md:pb-0">{children}</main>
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-zinc-200 bg-white md:hidden">

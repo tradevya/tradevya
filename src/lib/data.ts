@@ -12,8 +12,9 @@ export type Profile = {
   airport_id: string | null;
   station_id: string | null;
   role: string;
+  email_verified_at: string | null;
   companies?: { name: string } | null;
-  airports?: { iata_code: string; name: string; city: string; state: string } | null;
+  airports?: { iata_code: string; name: string; city: string; state: string; latitude?: number | null; longitude?: number | null } | null;
   stations?: { name: string } | null;
 };
 
@@ -37,7 +38,7 @@ export async function getDirectoryData(): Promise<DirectoryData> {
   const supabase = await createSupabaseServerClient();
   const [companiesResult, airportsResult, stationsResult] = await Promise.all([
     supabase.from("companies").select("id,name,is_other").order("is_other").order("name"),
-    supabase.from("airports").select("id,iata_code,name,city,state").order("iata_code"),
+    supabase.from("airports").select("id,iata_code,name,city,state,latitude,longitude").order("iata_code"),
     supabase.from("stations").select("id,airport_id,name,description").order("name"),
   ]);
 
@@ -69,9 +70,13 @@ export async function getAuthenticatedContext(options?: { requireVerified?: bool
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("*, companies(name), airports(iata_code,name,city,state), stations(name)")
+    .select("*, companies(name), airports(iata_code,name,city,state,latitude,longitude), stations(name)")
     .eq("id", user.id)
     .single();
+
+  if (options?.requireVerified !== false && !profile?.email_verified_at) {
+    redirect(`/verify-email?email=${encodeURIComponent(user.email ?? "")}`);
+  }
 
   if (
     options?.requireCompleteProfile !== false &&

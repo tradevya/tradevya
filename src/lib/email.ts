@@ -1,4 +1,4 @@
-import { PERSONAL_EMAIL_DOMAINS } from "@/lib/constants";
+import { OWNER_EMAIL_ALLOWLIST, PERSONAL_EMAIL_DOMAINS } from "@/lib/constants";
 
 export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
@@ -11,7 +11,13 @@ export function getEmailDomain(email: string) {
 }
 
 export function isPersonalEmail(email: string) {
-  return PERSONAL_EMAIL_DOMAINS.includes(getEmailDomain(email) as (typeof PERSONAL_EMAIL_DOMAINS)[number]);
+  const normalized = normalizeEmail(email);
+
+  if (OWNER_EMAIL_ALLOWLIST.includes(normalized as (typeof OWNER_EMAIL_ALLOWLIST)[number])) {
+    return false;
+  }
+
+  return PERSONAL_EMAIL_DOMAINS.includes(getEmailDomain(normalized) as (typeof PERSONAL_EMAIL_DOMAINS)[number]);
 }
 
 export function isValidWorkEmail(email: string) {
