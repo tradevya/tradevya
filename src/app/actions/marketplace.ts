@@ -18,6 +18,16 @@ const createShiftPostSchema = z.object({
   notes: z.string().trim().max(1000).optional(),
 });
 
+const updateShiftPostSchema = createShiftPostSchema.extend({
+  post_id: z.string().uuid(),
+  status: z.enum(["open", "closed"]),
+});
+
+const deleteOwnShiftPostSchema = z.object({
+  post_id: z.string().uuid(),
+  confirm: z.string().trim(),
+});
+
 export async function createShiftPostAction(_state: ActionState, formData: FormData): Promise<ActionState> {
   const parsed = createShiftPostSchema.safeParse(Object.fromEntries(formData));
 
@@ -52,6 +62,53 @@ export async function createShiftPostAction(_state: ActionState, formData: FormD
   }
 
   redirect("/dashboard");
+}
+
+export async function updateOwnShiftPostAction(_state: ActionState, formData: FormData): Promise<ActionState> {
+  const parsed = updateShiftPostSchema.safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success) {
+    return { ok: false, message: parsed.error.issues[0]?.message ?? "Check the post form." };
+  }
+
+  const { supabase, user } = await getAuthenticatedContext();
+  const { error } = await supabase
+    .from("shift_posts")
+    .update({
+      category: parsed.data.category,
+      shift_date: parsed.data.shift_date,
+      day_of_week: dayOfWeekFromDate(parsed.data.shift_date),
+      shift_start: parsed.data.shift_start,
+      shift_end: parsed.data.shift_end,
+      location_team: parsed.data.location_team || null,
+      notes: parsed.data.notes || null,
+      status: parsed.data.status,
+    })
+    .eq("id", parsed.data.post_id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  redirect(`/posts/${parsed.data.post_id}`);
+}
+
+export async function deleteOwnShiftPostAction(formData: FormData) {
+  const parsed = deleteOwnShiftPostSchema.safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success || parsed.data.confirm !== "DELETE") {
+    redirect("/my-posts?error=delete");
+  }
+
+  const { supabase, user } = await getAuthenticatedContext();
+  await supabase
+    .from("shift_posts")
+    .delete()
+    .eq("id", parsed.data.post_id)
+    .eq("user_id", user.id);
+
+  redirect("/my-posts?deleted=1");
 }
 
 const submitRequestSchema = z.object({

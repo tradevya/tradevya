@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, Clock, MapPin } from "lucide-react";
-import { respondToShiftRequestAction } from "@/app/actions/marketplace";
+import { ArrowLeft, CalendarDays, Clock, MapPin, Pencil, Trash2 } from "lucide-react";
+import { deleteOwnShiftPostAction, respondToShiftRequestAction } from "@/app/actions/marketplace";
 import { AppShell } from "@/components/app-shell";
 import { PostDetailBackGuard } from "@/components/post-detail-back-guard";
 import { CategoryBadge, StatusBadge } from "@/components/status-badge";
@@ -108,9 +108,27 @@ export default async function ShiftPostDetailPage({
       ) : (
         <div className="grid gap-5">
           <section className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
-            <div className="flex flex-wrap gap-2">
-              <CategoryBadge value={post.category} />
-              <StatusBadge value={post.status} />
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex flex-wrap gap-2">
+                <CategoryBadge value={post.category} />
+                <StatusBadge value={post.status} />
+              </div>
+              {isOwner ? (
+                <div className="flex flex-wrap gap-2">
+                  <Link className="inline-flex min-h-10 items-center gap-2 rounded-md border border-zinc-300 bg-white px-3 text-sm font-bold text-zinc-700 hover:bg-zinc-50" href={`/posts/${post.id}/edit`}>
+                    <Pencil aria-hidden="true" size={16} />
+                    Edit
+                  </Link>
+                  <form action={deleteOwnShiftPostAction} className="flex gap-2">
+                    <input name="post_id" type="hidden" value={post.id} />
+                    <input className="h-10 w-24 rounded-md border border-zinc-300 bg-white px-2 text-xs outline-none focus:border-rose-600" name="confirm" placeholder="DELETE" />
+                    <button className="inline-flex min-h-10 items-center gap-2 rounded-md bg-rose-700 px-3 text-sm font-bold text-white hover:bg-rose-800" type="submit">
+                      <Trash2 aria-hidden="true" size={16} />
+                      Delete
+                    </button>
+                  </form>
+                </div>
+              ) : null}
             </div>
             <h1 className="mt-4 text-3xl font-bold text-zinc-950">{post.day_of_week} shift</h1>
             <p className="mt-2 text-sm text-zinc-500">Posted by {post.poster_name_snapshot || posterProfile?.full_name || "Tradevya member"} on {formatDateTime(post.created_at)}</p>

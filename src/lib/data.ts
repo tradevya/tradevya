@@ -7,6 +7,7 @@ export type Profile = {
   id: string;
   email: string;
   full_name: string;
+  contact_phone: string | null;
   company_id: string | null;
   custom_company_name: string | null;
   airport_id: string | null;
@@ -15,6 +16,8 @@ export type Profile = {
   email_verified_at: string | null;
   blocked_at: string | null;
   blocked_reason: string | null;
+  disabled_at: string | null;
+  disabled_reason: string | null;
   companies?: { name: string } | null;
   airports?: { iata_code: string; name: string; city: string; state: string; latitude?: number | null; longitude?: number | null } | null;
   stations?: { name: string } | null;
@@ -80,7 +83,7 @@ export async function getAuthenticatedContext(options?: { requireVerified?: bool
     redirect(`/verify-email?email=${encodeURIComponent(user.email ?? "")}`);
   }
 
-  if (profile?.blocked_at) {
+  if (profile?.blocked_at || profile?.disabled_at) {
     redirect("/login?blocked=1");
   }
 
