@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Tradevya",
+    "slug": "tradevya",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "tradevya",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "com.tradevya.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.tradevya.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "97c984a4-a4bd-4cac-a61a-d245613c19dd"
+      }
+    },
+    "owner": "cannyking"
+  }
+}
